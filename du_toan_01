@@ -1,0 +1,200 @@
+
+Sub PHAN_TICH_MOT_CONG_TAC_Run1()
+
+
+'tra_ten_cong_tac'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    Dim X_1 As String
+    X_1 = CStr(Selection.Value) 'gán gia tri o dang chon cho bien x1
+
+    
+    
+    Sheets("INFO").Select
+    Dim e_1 As String
+    e_1 = Range("d2").Value
+    Dim w1 As Workbook
+    Set w1 = Workbooks.Open(e_1)   'da mo file DATA
+    
+    
+    'VAO SHEET MAHIEU VA TIM KIEM
+    Sheets("maHIeu").Select
+    Cells.Find(What:=X_1, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+    xlPart, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=False _
+    , SearchFormat:=False).Activate
+    
+    'tu o hien hanh, chon mang, copy mang hien hanh nay
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Copy
+    
+    
+    'qua lai file du toan, vao sheet Gia_thau, va dan
+    Dim w2 As Workbook
+    Set w2 = ThisWorkbook 'tuc la set w2 la file excel chua macro nay, tuc là file du toan
+    w2.Activate
+    Sheets("gia_thau").Select
+    
+
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False   'cau lenh san gia tri tai vung dang hien hanh
+    
+    
+    w1.Close SaveChanges:=False    'tat file data di va ko luu
+        
+
+
+
+
+
+
+'PHAN_TICH_DON_GIA'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    
+    Set w1 = Workbooks.Open(e_1)   'da mo file DATA
+    
+    
+    
+    'VAO SHEET DM VA TIM KIEM
+    Sheets("dm").Select
+    
+    Cells.Find(What:=X_1, After:=ActiveCell, LookIn:=xlFormulas, LookAt:= _
+    xlPart, SearchOrder:=xlByRows, SearchDirection:=xlNext, MatchCase:=False _
+    , SearchFormat:=False).Activate     'cau lenh tim trong sheet hien hanh, gia tri giong bien X_1
+    
+    'tu o hien hanh, chon mang, copy mang hien hanh nay
+    Range(Selection, Selection.End(xlDown)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    Selection.Copy
+    
+    
+    'qua lai file du toan, vao sheet du toan, vao ô ke tiep cua cot B va dan
+    
+    w2.Activate
+    Sheets("du_toan").Select
+    
+    Dim Gia_tri_1 As String
+    Gia_tri_1 = Cells(1, 1).Value
+    Range("B" & Gia_tri_1).Select
+    ActiveSheet.Paste
+    
+    
+    w1.Close SaveChanges:=False    'tat file data di va ko luu
+    
+    
+    
+    
+    'bh ta be lin trong sheet Du toan, cua file Du toan
+     w2.Activate
+    If Not IsEmpty(w2.LinkSources(xlExcelLinks)) Then
+    For Each ext_link In w2.LinkSources(xlExcelLinks)
+    w2.BreakLink ext_link, xlLinkTypeExcelLinks
+    Next ext_link
+    End If
+    
+    
+    
+    
+    
+    
+    '''''gán vi tri row hien hanh cho bien h, ví du hien o o B7 thi h=7
+    Dim j As String
+    Dim h As String
+    j = ActiveCell.Address
+    h = Right(j, Len(j) - 3)
+    
+    
+    
+    
+    
+    '''''dem so row vung dang chon va gan' vao bien f
+    Dim g As Range
+    Set g = Selection
+    'ghi chu' : cells dang chon thi là activeCells
+    'ghi chu' : vung` dang chon thi la Selection
+    Dim f As String
+    f = g.Rows.Count
+    
+    
+    
+    'dien cong thuc cho côt 6 va 7 cua sheet Du toan
+    For i = h + 1 To h + (f - 1)
+        Cells(i, 6).FormulaR1C1 = "=VLOOKUP(RC[-4],_gia_1,4,0)"
+        Cells(i, 7).FormulaR1C1 = "=RC[-2]*(R" & h & "C7)"
+    Next i
+    
+    
+    
+    
+    
+    
+    Sheets("gia_thau").Select
+    '''''gán vi tri cells hien hanh cho bien viTri_2
+    
+    Dim viTri_1 As String
+    viTri_1 = ActiveCell.Address
+    viTri_2 = Right(viTri_1, Len(viTri_1) - 3)
+    
+    '''''gán các công thuc cho cot TT, cot i cua sheets gia thau
+    Sheets("gia_thau").Select
+    Cells(viTri_2, 9).FormulaR1C1 = "=(RC[-1]*RC[-3])"
+    Cells(viTri_2, 10) = "PT"
+    
+        
+    
+    
+    Sheets("gia_thau").Select
+    '''''gán vi tri cells hien hanh cho bien link_2
+    
+    Dim link_1 As String
+    Dim link_2 As String
+    link_1 = ActiveCell.Address
+    link_2 = Right(link_1, Len(link_1) - 3)
+    
+    
+    Sheets("gia_thau").Select
+    Range("B" & link_2).Copy
+    Sheets("du_toan").Select
+    Range("A" & h).Select
+    ActiveSheet.Paste link:=True
+    Application.CutCopyMode = False
+    
+    
+    
+    Sheets("gia_thau").Select
+    Range("C" & link_2).Copy
+    Sheets("du_toan").Select
+    Range("B" & h).Select
+    ActiveSheet.Paste link:=True
+    Application.CutCopyMode = False
+    
+    
+    Sheets("gia_thau").Select
+    Range("D" & link_2).Copy
+    Sheets("du_toan").Select
+    Range("C" & h).Select
+    ActiveSheet.Paste link:=True
+    Application.CutCopyMode = False
+     
+
+    Sheets("gia_thau").Select
+    Range("H" & link_2).Copy
+    Sheets("du_toan").Select
+    Range("G" & h).Select
+    ActiveSheet.Paste link:=True
+    Application.CutCopyMode = False
+    
+    Sheets("du_toan").Select
+    Range("F" & h).Copy
+    Sheets("gia_thau").Select
+    Range("F" & link_2).Select
+    ActiveSheet.Paste link:=True
+    Application.CutCopyMode = False
+    
+    Sheets("gia_thau").Select
+    
+    
+    
+    MsgBox "da_phan_tich_xong"
+
+    
+End Sub
+
+
+
